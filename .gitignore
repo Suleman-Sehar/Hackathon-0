@@ -4,6 +4,8 @@ linkedin_session/
 
 # Authentication tokens
 token.json
+credential.json
+*.credential.json
 
 # IDE and editor files
 .qwen/
