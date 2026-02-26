@@ -1,0 +1,53 @@
+# Session data (browser/app sessions - contains sensitive data)
+whatsapp_session/
+linkedin_session/
+
+# Authentication tokens
+token.json
+
+# IDE and editor files
+.qwen/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Log files
+Logs/
+*.log
+
+# Database files (browser caches, etc.)
+*.db
+*.db-journal
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# MCP and watcher session caches
+MCP/
+watchers/
+
+# Status folders (runtime data)
+Needs_Action/
+Pending_Approval/
+Approved/
+Rejected/
+Done/
+Inbox/
+
+# Keep only the main Python files from Silver Tire root
+# Exclude everything else in root except specific files
+scheduler.py

@@ -1,0 +1,192 @@
+{
+  "version": "1.0",
+  "created": "2026-02-22",
+  "last_updated": "2026-02-23T14:30:00",
+  "vault_name": "AI_Employee_Vault",
+  "ai_employee": "Suleman AI Employee v0.1 Bronze",
+
+  "statistics": {
+    "total_files": 5,
+    "total_plans": 3,
+    "total_tasks": 11,
+    "pending_tasks": 11,
+    "completed_tasks": 0,
+    "files_by_folder": {
+      "Inbox": 0,
+      "Needs_Action": 0,
+      "Plans": 3,
+      "Done": 2,
+      "Logs": 4
+    },
+    "files_by_priority": {
+      "P1": 2,
+      "P2": 1,
+      "P3": 1,
+      "P4": 0
+    },
+    "files_by_category": {
+      "client": 3,
+      "general": 1,
+      "test": 1
+    }
+  },
+
+  "files": [
+    {
+      "file_id": "acme-onboard-20260222",
+      "filename": "PLAN_20260222_AcmeCorpOnboarding.md",
+      "path": "Plans/projects/PLAN_20260222_AcmeCorpOnboarding.md",
+      "type": "plan",
+      "priority": "P1",
+      "status": "active",
+      "tags": ["onboarding", "enterprise", "acme-corp"]
+    },
+    {
+      "file_id": "bronze-test-20260222",
+      "filename": "PLAN_Bronze_Test.md",
+      "path": "Plans/PLAN_Bronze_Test.md",
+      "type": "plan",
+      "priority": "P3",
+      "status": "active",
+      "tags": ["test", "bronze-tier"]
+    },
+    {
+      "file_id": "client-invoice-20260223",
+      "filename": "PLAN_20260223_ClientInvoice.md",
+      "path": "Plans/PLAN_20260223_ClientInvoice.md",
+      "type": "plan",
+      "priority": "P2",
+      "status": "active",
+      "tags": ["invoice", "client", "billing"]
+    },
+    {
+      "file_id": "acme-source-20260222",
+      "filename": "20260222_client_onboarding_acme.md",
+      "path": "Done/2026/20260222_client_onboarding_acme.md",
+      "type": "archived",
+      "priority": "P1",
+      "status": "archived",
+      "tags": ["onboarding", "enterprise", "acme-corp"]
+    },
+    {
+      "file_id": "invoice-source-20260223",
+      "filename": "20260223_python_filesystem_watcher.py",
+      "path": "Done/2026-02/20260223_python_filesystem_watcher.py",
+      "type": "archived",
+      "priority": "P2",
+      "status": "archived",
+      "tags": ["invoice", "client"]
+    }
+  ],
+
+  "tags": ["onboarding", "enterprise", "acme-corp", "test", "bronze-tier", "invoice", "billing"],
+
+  "assignees": ["unassigned"],
+
+  "plans": [
+    {
+      "file_id": "acme-onboard-20260222",
+      "filename": "PLAN_20260222_AcmeCorpOnboarding.md",
+      "path": "Plans/projects/PLAN_20260222_AcmeCorpOnboarding.md",
+      "priority": "P1",
+      "status": "active",
+      "task_count": 5,
+      "due_date": "2026-02-28"
+    },
+    {
+      "file_id": "bronze-test-20260222",
+      "filename": "PLAN_Bronze_Test.md",
+      "path": "Plans/PLAN_Bronze_Test.md",
+      "priority": "P3",
+      "status": "active",
+      "task_count": 3,
+      "due_date": null
+    },
+    {
+      "file_id": "client-invoice-20260223",
+      "filename": "PLAN_20260223_ClientInvoice.md",
+      "path": "Plans/PLAN_20260223_ClientInvoice.md",
+      "priority": "P2",
+      "status": "active",
+      "task_count": 3,
+      "due_date": "2026-02-24"
+    }
+  ],
+
+  "tasks": [
+    {
+      "plan_id": "acme-onboard-20260222",
+      "name": "Set Up Client Account",
+      "priority": "P1",
+      "status": "pending",
+      "due": "2026-02-25"
+    },
+    {
+      "plan_id": "acme-onboard-20260222",
+      "name": "Schedule Onboarding Call",
+      "priority": "P1",
+      "status": "pending",
+      "due": "2026-02-24"
+    },
+    {
+      "plan_id": "acme-onboard-20260222",
+      "name": "Prepare Welcome Package",
+      "priority": "P2",
+      "status": "pending",
+      "due": "2026-02-26"
+    },
+    {
+      "plan_id": "acme-onboard-20260222",
+      "name": "Assign Account Manager",
+      "priority": "P1",
+      "status": "pending",
+      "due": "2026-02-23"
+    },
+    {
+      "plan_id": "acme-onboard-20260222",
+      "name": "Configure Custom Integrations",
+      "priority": "P2",
+      "status": "pending",
+      "due": "2026-02-27"
+    },
+    {
+      "plan_id": "bronze-test-20260222",
+      "name": "Test Inbox Processing",
+      "priority": "P2",
+      "status": "pending"
+    },
+    {
+      "plan_id": "bronze-test-20260222",
+      "name": "Test File Naming Convention",
+      "priority": "P3",
+      "status": "pending"
+    },
+    {
+      "plan_id": "bronze-test-20260222",
+      "name": "Test Log Writing",
+      "priority": "P3",
+      "status": "pending"
+    },
+    {
+      "plan_id": "client-invoice-20260223",
+      "name": "Create Invoice",
+      "priority": "P2",
+      "status": "pending",
+      "due": "2026-02-24"
+    },
+    {
+      "plan_id": "client-invoice-20260223",
+      "name": "Send Invoice to Client",
+      "priority": "P2",
+      "status": "pending",
+      "due": "2026-02-24"
+    },
+    {
+      "plan_id": "client-invoice-20260223",
+      "name": "Track Payment",
+      "priority": "P3",
+      "status": "pending",
+      "due": "2026-02-28"
+    }
+  ]
+}

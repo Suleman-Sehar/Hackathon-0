@@ -1,0 +1,19 @@
+{
+  "file_id": "bronze-test-20260222",
+  "filename": "PLAN_Bronze_Test.md",
+  "path": "Plans/PLAN_Bronze_Test.md",
+  "created": "2026-02-22T09:00:00",
+  "modified": "2026-02-22T09:00:00",
+  "size_bytes": 1024,
+  "type": "plan",
+  "priority": "P3",
+  "status": "active",
+  "assignee": "unassigned",
+  "category": "general",
+  "tags": ["test", "bronze-tier"],
+  "due_date": null,
+  "source": null,
+  "related_files": [],
+  "task_count": 3,
+  "custom": {}
+}

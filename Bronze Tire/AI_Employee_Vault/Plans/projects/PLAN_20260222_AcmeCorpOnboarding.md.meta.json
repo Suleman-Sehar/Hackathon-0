@@ -1,0 +1,24 @@
+{
+  "file_id": "acme-onboard-20260222",
+  "filename": "PLAN_20260222_AcmeCorpOnboarding.md",
+  "path": "Plans/projects/PLAN_20260222_AcmeCorpOnboarding.md",
+  "created": "2026-02-22T10:00:00",
+  "modified": "2026-02-22T10:00:00",
+  "size_bytes": 2048,
+  "type": "plan",
+  "priority": "P1",
+  "status": "active",
+  "assignee": "unassigned",
+  "category": "client",
+  "tags": ["onboarding", "enterprise", "acme-corp"],
+  "due_date": "2026-02-28",
+  "source": "Done/2026/20260222_client_onboarding_acme.md",
+  "related_files": [],
+  "task_count": 5,
+  "custom": {
+    "client_name": "Acme Corp",
+    "budget": "$5000/month",
+    "contact": "John Smith",
+    "go_live_date": "2026-03-01"
+  }
+}
