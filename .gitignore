@@ -1,13 +1,60 @@
-# Session data (browser/app sessions - contains sensitive data)
+# ===========================================
+# HACKATHON 0 - AI EMPLOYEE SYSTEM
+# ===========================================
+
+# ===========================================
+# SESSION DATA (Browser/App sessions - sensitive)
+# ===========================================
 whatsapp_session/
 linkedin_session/
+Silver Tire/whatsapp_session/
+Silver Tire/linkedin_session/
+linkedin_session_backup/
 
-# Authentication tokens
+# ===========================================
+# AUTHENTICATION & CREDENTIALS (SENSITIVE)
+# ===========================================
 token.json
+credentials.json
 credential.json
 *.credential.json
+Silver Tire/AI_Employee_Vault/credential.json
+Bronze Tire/AI_Employee_Vault/credential.json
 
-# IDE and editor files
+# ===========================================
+# RUNTIME DATA FOLDERS (Generated content)
+# ===========================================
+# Silver Tire runtime folders
+Silver Tire/Needs_Action/
+Silver Tire/Pending_Approval/
+Silver Tire/Approved/
+Silver Tire/Rejected/
+Silver Tire/Done/
+Silver Tire/Inbox/
+Silver Tire/Logs/
+Silver Tire/AI_Employee_Vault/Logs/
+
+# Bronze Tire runtime folders
+Bronze Tire/Needs_Action/
+Bronze Tire/Pending_Approval/
+Bronze Tire/Approved/
+Bronze Tire/Rejected/
+Bronze Tire/Done/
+Bronze Tire/Inbox/
+Bronze Tire/Logs/
+
+# Root level runtime folders
+Needs_Action/
+Pending_Approval/
+Approved/
+Rejected/
+Done/
+Inbox/
+Logs/
+
+# ===========================================
+# IDE AND EDITOR FILES
+# ===========================================
 .qwen/
 .vscode/
 .idea/
@@ -15,41 +62,58 @@ credential.json
 *.swo
 *~
 
-# OS files
+# ===========================================
+# OS FILES
+# ===========================================
 .DS_Store
 Thumbs.db
+desktop.ini
 
-# Log files
-Logs/
+# ===========================================
+# LOG FILES
+# ===========================================
 *.log
 
-# Database files (browser caches, etc.)
+# ===========================================
+# DATABASE FILES (Browser caches, etc.)
+# ===========================================
 *.db
 *.db-journal
 
-# Temporary files
+# ===========================================
+# TEMPORARY FILES
+# ===========================================
 tmp/
 temp/
 *.tmp
 
-# Python cache
+# ===========================================
+# PYTHON CACHE
+# ===========================================
 __pycache__/
 *.py[cod]
 *$py.class
 .pytest_cache/
+*.pyo
 
-# MCP and watcher session caches
-MCP/
-watchers/
+# ===========================================
+# VIRTUAL ENVIRONMENTS
+# ===========================================
+venv/
+env/
+.env
+.venv/
 
-# Status folders (runtime data)
-Needs_Action/
-Pending_Approval/
-Approved/
-Rejected/
-Done/
-Inbox/
+# ===========================================
+# BUILD ARTIFACTS
+# ===========================================
+build/
+dist/
+*.egg-info/
 
-# Keep only the main Python files from Silver Tire root
-# Exclude everything else in root except specific files
-scheduler.py
+# ===========================================
+# NOTES
+# ===========================================
+# Keep Silver Tire/AI_Employee_Vault structure but ignore runtime data
+# Keep Bronze Tire/AI_Employee_Vault structure but ignore runtime data
+# Credentials and sessions are NEVER committed
