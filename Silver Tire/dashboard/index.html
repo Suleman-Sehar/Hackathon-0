@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Silver Tier Dashboard | AI Employee v0.2</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/styles.css?v=2026031015">
+</head>
+<body>
+    <div class="bg-animation"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>Silver Tier Dashboard</h1>
+                    <p>AI Employee v0.2 — Autonomous Automation Platform</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <div class="status-badge">
+                    <div class="status-dot"></div>
+                    <span>System Online</span>
+                </div>
+                <div class="datetime" id="currentDateTime"></div>
+                <button class="btn btn-refresh" onclick="refreshAllData()" title="Refresh Data">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+                <button class="btn btn-primary" onclick="showHelp()" style="margin-left: 10px;">
+                    <i class="fas fa-question"></i>
+                    Help
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Welcome Banner -->
+        <div class="welcome-banner">
+            <div class="welcome-content">
+                <h2>Welcome to Your AI Employee Dashboard</h2>
+                <p>Monitor and control Gmail, WhatsApp, and LinkedIn automation from one elegant interface</p>
+            </div>
+            <div class="welcome-actions">
+                <button class="btn btn-primary" onclick="openQuickAction('email')">
+                    <i class="fas fa-envelope"></i>
+                    New Email
+                </button>
+                <button class="btn btn-secondary" onclick="openQuickAction('whatsapp')">
+                    <i class="fab fa-whatsapp"></i>
+                    Send Message
+                </button>
+                <button class="btn btn-accent" onclick="openQuickAction('linkedin')">
+                    <i class="fab fa-linkedin"></i>
+                    Create Post
+                </button>
+            </div>
+        </div>
+
+        <!-- Metrics Grid -->
+        <div class="metrics-grid">
+            <div class="metric-card metric-email">
+                <div class="metric-header">
+                    <div class="metric-icon email">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="metric-trend up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>Automated</span>
+                    </div>
+                </div>
+                <div class="metric-value" id="metricEmails">0</div>
+                <div class="metric-label">Emails Sent Today</div>
+                <div class="metric-detail">via Gmail MCP</div>
+            </div>
+
+            <div class="metric-card metric-whatsapp">
+                <div class="metric-header">
+                    <div class="metric-icon whatsapp">
+                        <i class="fab fa-whatsapp"></i>
+                    </div>
+                    <div class="metric-trend up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>Auto-Send</span>
+                    </div>
+                </div>
+                <div class="metric-value" id="metricWhatsApp">0</div>
+                <div class="metric-label">WhatsApp Messages</div>
+                <div class="metric-detail">Browser Automation</div>
+            </div>
+
+            <div class="metric-card metric-linkedin">
+                <div class="metric-header">
+                    <div class="metric-icon linkedin">
+                        <i class="fab fa-linkedin"></i>
+                    </div>
+                    <div class="metric-trend up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>Autonomous</span>
+                    </div>
+                </div>
+                <div class="metric-value" id="metricLinkedIn">0</div>
+                <div class="metric-label">LinkedIn Posts</div>
+                <div class="metric-detail">Auto-Publishing</div>
+            </div>
+
+            <div class="metric-card metric-total">
+                <div class="metric-header">
+                    <div class="metric-icon total">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="metric-trend up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>All Active</span>
+                    </div>
+                </div>
+                <div class="metric-value" id="metricTotal">0</div>
+                <div class="metric-label">Total Actions</div>
+                <div class="metric-detail">Today's Activity</div>
+            </div>
+        </div>
+
+        <!-- Platform Status Section -->
+        <div class="section platforms-section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-plug"></i>
+                    Platform Integration Status
+                </h2>
+                <span class="section-badge">Real-Time</span>
+            </div>
+            
+            <div class="platform-grid">
+                <!-- Gmail Platform -->
+                <div class="platform-card" id="platformGmail">
+                    <div class="platform-card-header">
+                        <div class="platform-icon gmail">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="platform-status connected">
+                            <div class="status-dot"></div>
+                            <span>Connected</span>
+                        </div>
+                    </div>
+                    <h3 class="platform-name">Gmail</h3>
+                    <p class="platform-desc">SMTP Email Automation</p>
+                    <div class="platform-stats">
+                        <div class="platform-stat">
+                            <div class="stat-value" id="gmailSent">0</div>
+                            <div class="stat-label">Sent Today</div>
+                        </div>
+                        <div class="platform-stat">
+                            <div class="stat-value" id="gmailPending">0</div>
+                            <div class="stat-label">Pending</div>
+                        </div>
+                    </div>
+                    <div class="platform-actions">
+                        <button class="btn btn-sm btn-primary" onclick="testGmail()">
+                            <i class="fas fa-paper-plane"></i>
+                            Test
+                        </button>
+                        <button class="btn btn-sm btn-secondary" onclick="viewLogs('email')">
+                            <i class="fas fa-list"></i>
+                            Logs
+                        </button>
+                    </div>
+                    <div class="platform-indicator"></div>
+                </div>
+
+                <!-- WhatsApp Platform -->
+                <div class="platform-card" id="platformWhatsApp">
+                    <div class="platform-card-header">
+                        <div class="platform-icon whatsapp">
+                            <i class="fab fa-whatsapp"></i>
+                        </div>
+                        <div class="platform-status connected">
+                            <div class="status-dot"></div>
+                            <span>Connected</span>
+                        </div>
+                    </div>
+                    <h3 class="platform-name">WhatsApp</h3>
+                    <p class="platform-desc">Browser Automation</p>
+                    <div class="platform-stats">
+                        <div class="platform-stat">
+                            <div class="stat-value" id="whatsappSent">0</div>
+                            <div class="stat-label">Sent Today</div>
+                        </div>
+                        <div class="platform-stat">
+                            <div class="stat-value" id="whatsappPending">0</div>
+                            <div class="stat-label">Pending</div>
+                        </div>
+                    </div>
+                    <div class="platform-actions">
+                        <button class="btn btn-sm btn-primary" onclick="testWhatsApp()">
+                            <i class="fas fa-comment"></i>
+                            Test
+                        </button>
+                        <button class="btn btn-sm btn-secondary" onclick="viewLogs('whatsapp')">
+                            <i class="fas fa-list"></i>
+                            Logs
+                        </button>
+                    </div>
+                    <div class="platform-indicator"></div>
+                </div>
+
+                <!-- LinkedIn Platform -->
+                <div class="platform-card" id="platformLinkedIn">
+                    <div class="platform-card-header">
+                        <div class="platform-icon linkedin">
+                            <i class="fab fa-linkedin"></i>
+                        </div>
+                        <div class="platform-status connected">
+                            <div class="status-dot"></div>
+                            <span>Connected</span>
+                        </div>
+                    </div>
+                    <h3 class="platform-name">LinkedIn</h3>
+                    <p class="platform-desc">Autonomous Posting</p>
+                    <div class="platform-stats">
+                        <div class="platform-stat">
+                            <div class="stat-value" id="linkedinPosts">0</div>
+                            <div class="stat-label">Posts Today</div>
+                        </div>
+                        <div class="platform-stat">
+                            <div class="stat-value" id="linkedinPending">0</div>
+                            <div class="stat-label">Scheduled</div>
+                        </div>
+                    </div>
+                    <div class="platform-actions">
+                        <button class="btn btn-sm btn-accent" onclick="testLinkedIn()">
+                            <i class="fas fa-edit"></i>
+                            Post
+                        </button>
+                        <button class="btn btn-sm btn-secondary" onclick="viewLogs('linkedin')">
+                            <i class="fas fa-list"></i>
+                            Logs
+                        </button>
+                    </div>
+                    <div class="platform-indicator"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity Feed & Quick Actions -->
+        <div class="dashboard-grid">
+            <!-- Recent Activity -->
+            <div class="section activity-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-history"></i>
+                        Recent Activity
+                    </h2>
+                    <button class="btn btn-sm btn-secondary" onclick="viewAllActivity()">
+                        View All <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+                <div class="activity-feed" id="activityFeed">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Loading activity...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="section quick-actions-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-bolt"></i>
+                        Quick Actions
+                    </h2>
+                </div>
+                <div class="quick-actions-grid">
+                    <div class="quick-action-card" onclick="openQuickAction('email')">
+                        <div class="quick-action-icon email">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <h4>Send Email</h4>
+                        <p>Create and send via Gmail</p>
+                    </div>
+                    <div class="quick-action-card" onclick="openQuickAction('whatsapp')">
+                        <div class="quick-action-icon whatsapp">
+                            <i class="fab fa-whatsapp"></i>
+                        </div>
+                        <h4>Send WhatsApp</h4>
+                        <p>Message any contact</p>
+                    </div>
+                    <div class="quick-action-card" onclick="openQuickAction('linkedin')">
+                        <div class="quick-action-icon linkedin">
+                            <i class="fab fa-linkedin"></i>
+                        </div>
+                        <h4>Post to LinkedIn</h4>
+                        <p>Autonomous publishing</p>
+                    </div>
+                    <div class="quick-action-card" onclick="runOrchestrator()">
+                        <div class="quick-action-icon action">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                        <h4>Run Orchestrator</h4>
+                        <p>Process all pending</p>
+                    </div>
+                </div>
+
+                <!-- System Health -->
+                <div class="system-health">
+                    <h3 class="health-title">
+                        <i class="fas fa-heartbeat"></i>
+                        System Health
+                    </h3>
+                    <div class="health-items">
+                        <div class="health-item">
+                            <span class="health-label">API Status</span>
+                            <span class="health-value healthy">Healthy</span>
+                        </div>
+                        <div class="health-item">
+                            <span class="health-label">Session Storage</span>
+                            <span class="health-value healthy">Active</span>
+                        </div>
+                        <div class="health-item">
+                            <span class="health-label">Auto-Processing</span>
+                            <span class="health-value healthy">Enabled</span>
+                        </div>
+                        <div class="health-item">
+                            <span class="health-label">Error Rate</span>
+                            <span class="health-value healthy" id="errorRate">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Modal for Quick Actions -->
+    <div class="modal" id="actionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Quick Action</h3>
+                <button class="modal-close" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Dynamic content -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div class="modal" id="helpModal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-book"></i> How to Use Dashboard</h3>
+                <button class="modal-close" onclick="closeHelp()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" style="max-height: 600px; overflow-y: auto;">
+                <div style="padding: 1rem;">
+                    <h4 style="color: var(--primary); margin-bottom: 1rem;">🚀 Quick Start</h4>
+                    
+                    <div style="background: rgba(99, 102, 241, 0.1); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                        <strong>First Time Setup:</strong>
+                        <ol style="margin: 0.5rem 0 0 1.5rem; padding: 0;">
+                            <li>Press <strong>Ctrl+Shift+R</strong> to hard refresh</li>
+                            <li>Click "Test" on Gmail card to test email</li>
+                            <li>Click "Test" on WhatsApp card (scan QR code first time)</li>
+                            <li>Click "Post" on LinkedIn card (login first time)</li>
+                        </ol>
+                    </div>
+
+                    <h4 style="color: var(--primary); margin: 1.5rem 0 1rem;">📧 Send Email</h4>
+                    <ol style="margin: 0; padding-left: 1.5rem;">
+                        <li>Click "Test" button on Gmail card (sends test email)</li>
+                        <li>OR click "New Email" in Quick Actions (custom email)</li>
+                        <li>Fill in: To, Subject, Message</li>
+                        <li>Click "Send Email"</li>
+                        <li>Check your inbox at solemanseher@gmail.com</li>
+                    </ol>
+
+                    <h4 style="color: var(--primary); margin: 1.5rem 0 1rem;">💬 Send WhatsApp</h4>
+                    <ol style="margin: 0; padding-left: 1.5rem;">
+                        <li>Click "Test" button on WhatsApp card</li>
+                        <li><strong>First time:</strong> Scan QR code with phone</li>
+                        <li>Message sends automatically</li>
+                        <li>OR use "Send WhatsApp" in Quick Actions for custom number</li>
+                    </ol>
+
+                    <h4 style="color: var(--primary); margin: 1.5rem 0 1rem;">💼 Post to LinkedIn</h4>
+                    <ol style="margin: 0; padding-left: 1.5rem;">
+                        <li>Click "Post" button on LinkedIn card</li>
+                        <li><strong>First time:</strong> Login to LinkedIn</li>
+                        <li>Post publishes automatically</li>
+                        <li>OR use "Post to LinkedIn" in Quick Actions for custom post</li>
+                    </ol>
+
+                    <h4 style="color: var(--primary); margin: 1.5rem 0 1rem;">🔍 View Logs</h4>
+                    <ul style="margin: 0; padding-left: 1.5rem;">
+                        <li>Click "Logs" button on any platform card</li>
+                        <li>Opens audit log in new tab</li>
+                        <li>Shows all sent emails/messages/posts</li>
+                        <li>Check "Recent Activity" section for live feed</li>
+                    </ul>
+
+                    <h4 style="color: var(--primary); margin: 1.5rem 0 1rem;">📊 Metrics</h4>
+                    <ul style="margin: 0; padding-left: 1.5rem;">
+                        <li><strong>Emails Sent Today:</strong> Count of emails sent</li>
+                        <li><strong>WhatsApp Messages:</strong> Messages sent</li>
+                        <li><strong>LinkedIn Posts:</strong> Posts published</li>
+                        <li><strong>Total Actions:</strong> Combined count</li>
+                        <li>Updates every 30 seconds automatically</li>
+                    </ul>
+
+                    <div style="background: rgba(16, 185, 129, 0.1); padding: 1rem; border-radius: 8px; margin-top: 1.5rem;">
+                        <strong style="color: var(--success);">✅ Tips:</strong>
+                        <ul style="margin: 0.5rem 0 0 1.5rem; padding: 0;">
+                            <li>Always hard refresh first time (Ctrl+Shift+R)</li>
+                            <li>Check activity feed for confirmation</li>
+                            <li>Logs button shows detailed history</li>
+                            <li>Press F12 for console logs if issues</li>
+                        </ul>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 1.5rem;">
+                        <button class="btn btn-primary" onclick="closeHelp()" style="display: inline-block;">
+                            Got it! Start Using Dashboard
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/app.js?v=2026031016"></script>
+</body>
+</html>

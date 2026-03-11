@@ -15,6 +15,257 @@ BASE_DIR = Path(__file__).parent.parent.parent
 SESSION_DIR = BASE_DIR / "whatsapp_session"
 SESSION_DIR.mkdir(exist_ok=True, parents=True)
 
+# Try to use Chrome's Default profile
+import os
+import sys
+
+CHROME_PROFILES = [
+    os.path.expandvars(r"%LOCALAPPDATA%\Google\Chrome\User Data\Default"),
+    os.path.expandvars(r"%LOCALAPPDATA%\Google\Chrome\User Data\Profile 1"),
+    os.path.expandvars(r"%APPDATA%\Google\Chrome\User Data\Default"),
+]
+
+def get_chrome_profile():
+    """Find existing Chrome profile."""
+    for profile in CHROME_PROFILES:
+        if os.path.exists(profile) and len(os.listdir(profile)) > 5:
+            return profile
+    return None
+
+
+def send_whatsapp_message(phone_number: str, message: str, headless=False):
+    """
+    Send WhatsApp message to specified phone number.
+    Uses Chrome with default profile if available.
+
+    Args:
+        phone_number: Full phone number with country code (e.g., +923322580130)
+        message: Message text to send
+        headless: Whether to run browser in headless mode
+
+    Returns:
+        bool: True if message sent successfully
+    """
+    try:
+        with sync_playwright() as pwy:
+            # Try to use Chrome with default profile first
+            import subprocess
+            import os
+            
+            # Common Chrome paths
+            chrome_paths = [
+                r"C:\Program Files\Google\Chrome\Application\chrome.exe",
+                r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe",
+                os.path.expandvars(r"%LOCALAPPDATA%\Google\Chrome\Application\chrome.exe"),
+            ]
+            
+            chrome_path = None
+            for path in chrome_paths:
+                if os.path.exists(path):
+                    chrome_path = path
+                    break
+            
+            # Try to use existing Chrome profile
+            chrome_profile = get_chrome_profile()
+            
+            if chrome_path and chrome_profile:
+                # Use actual Chrome with existing profile (where QR is already scanned!)
+                print(f"[INFO] Using Chrome: {chrome_path}")
+                print(f"[INFO] Using profile: {chrome_profile}")
+                context = pwy.chromium.launch_persistent_context(
+                    user_data_dir=chrome_profile,
+                    headless=headless,
+                    viewport={'width': 1280, 'height': 800},
+                    args=[
+                        '--disable-blink-features=AutomationControlled',
+                        '--no-sandbox',
+                        '--disable-dev-shm-usage',
+                        '--disable-features=TranslateUI',
+                        '--disable-ipc-flooding-protection',
+                    ],
+                    chromium_executable=chrome_path,
+                    slow_mo=100
+                )
+            elif chrome_path:
+                # Use Chrome with our session folder
+                print(f"[INFO] Using Chrome: {chrome_path}")
+                context = pwy.chromium.launch_persistent_context(
+                    user_data_dir=str(SESSION_DIR),
+                    headless=headless,
+                    viewport={'width': 1280, 'height': 800},
+                    args=[
+                        '--disable-blink-features=AutomationControlled',
+                        '--no-sandbox',
+                        '--disable-dev-shm-usage',
+                        '--disable-features=TranslateUI',
+                        '--disable-ipc-flooding-protection',
+                    ],
+                    chromium_executable=chrome_path,
+                    slow_mo=100
+                )
+            else:
+                # Fallback to default Chromium
+                print("[INFO] Chrome not found, using default Chromium")
+                context = pwy.chromium.launch_persistent_context(
+                    user_data_dir=str(SESSION_DIR),
+                    headless=headless,
+                    viewport={'width': 1280, 'height': 800},
+                    args=['--disable-blink-features=AutomationControlled', '--no-sandbox'],
+                    slow_mo=100
+                )
+
+            page = context.pages[0] if context.pages else context.new_page()
+            
+            p("[INFO] Opening WhatsApp Web...")
+            
+            # Navigate with longer timeout
+            try:
+                page.goto("https://web.whatsapp.com/", timeout=90000, wait_until='commit')
+                p("[OK] Page loaded")
+                time.sleep(5)
+            except Exception as e:
+                p(f"[WARN] Load issue: {e}")
+                page.reload()
+                time.sleep(5)
+            
+            p("\n[INFO] Checking login status...")
+            
+            # Check if logged in - try multiple selectors
+            logged_in = False
+            login_selectors = [
+                "div[data-testid='chat-list']",
+                "div[aria-label='Chat list']",
+                "span[data-icon='chat']"
+            ]
+            
+            for sel in login_selectors:
+                try:
+                    if page.is_visible(sel, timeout=3000):
+                        p(f"[OK] Already logged in! (found: {sel})")
+                        logged_in = True
+                        break
+                except:
+                    continue
+            
+            if not logged_in:
+                p("\n[!] QR CODE IS DISPLAYED")
+                p("[!] PLEASE SCAN WITH WHATSAPP MOBILE APP NOW")
+                p("[!] Waiting 120 seconds...\n")
+                
+                # Wait for login
+                for i in range(40):
+                    time.sleep(3)
+                    for sel in login_selectors:
+                        try:
+                            if page.is_visible(sel, timeout=2000):
+                                p(f"\n[OK] LOGIN DETECTED! (found: {sel})")
+                                p("[INFO] Waiting for page to initialize...")
+                                time.sleep(5)
+                                logged_in = True
+                                break
+                        except:
+                            continue
+                    if logged_in:
+                        break
+                    if i % 10 == 0 and i > 0:
+                        p(f"    Still waiting... ({i*3}s)")
+                
+                if not logged_in:
+                    p("\n[ERROR] Login timeout!")
+                    context.close()
+                    return False
+            
+            # Send message
+            p("\n[INFO] Sending message...")
+            clean_phone = phone_number.replace('+', '').replace(' ', '').replace('-', '')
+            
+            # Try multiple selectors for search box
+            search_selectors = [
+                "div[contenteditable='true'][data-tab='3']",
+                "div[contenteditable='true'][role='textbox']",
+                "div[aria-label='Search or start new chat']",
+            ]
+            
+            search_box = None
+            for sel in search_selectors:
+                try:
+                    if page.is_visible(sel, timeout=3000):
+                        search_box = page.locator(sel).first
+                        p(f"[OK] Found search box: {sel}")
+                        break
+                except:
+                    continue
+            
+            if search_box:
+                try:
+                    search_box.click()
+                    time.sleep(1)
+                    search_box.fill(clean_phone)
+                    time.sleep(3)
+                    p(f"[OK] Typed phone: {clean_phone}")
+                except Exception as e:
+                    p(f"[WARN] Could not type in search: {e}")
+            
+            # Try to click the contact or press Enter
+            time.sleep(2)
+            try:
+                search_box.press("Enter")
+                time.sleep(3)
+                p("[OK] Opened chat via Enter")
+            except:
+                pass
+            
+            # Wait for chat to load
+            p("[INFO] Waiting for chat to load...")
+            time.sleep(3)
+            
+            # Try multiple selectors for message input
+            msg_selectors = [
+                "div[contenteditable='true'][data-tab='10']",
+                "div[contenteditable='true'][role='textbox'][tabindex='0']",
+                "footer div[contenteditable='true']",
+                "div[aria-label='Type a message']",
+            ]
+            
+            msg_box = None
+            for sel in msg_selectors:
+                try:
+                    if page.is_visible(sel, timeout=3000):
+                        msg_box = page.locator(sel).first
+                        p(f"[OK] Found message box: {sel}")
+                        break
+                except:
+                    continue
+            
+            if msg_box:
+                try:
+                    msg_box.click()
+                    time.sleep(1)
+                    msg_box.fill(message)
+                    time.sleep(2)
+                    p("[OK] Message typed")
+                    
+                    # Try to send
+                    try:
+                        msg_box.press("Enter")
+                        time.sleep(2)
+                        p("[OK] Message sent!")
+                        context.close()
+                        return True
+                    except:
+                        p("[WARN] Could not send message")
+                except Exception as e:
+                    p(f"[WARN] Could not type message: {e}")
+            
+            context.close()
+            return False
+            
+    except Exception as e:
+        p(f"[ERROR] Fatal: {e}")
+        return False
+
+
+
 def main():
     """Main WhatsApp MCP execution."""
     p("="*60)

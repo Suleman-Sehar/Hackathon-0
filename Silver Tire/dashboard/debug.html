@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Debug</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #1e293b; color: #f1f5f9; }
+        .log { background: #0f172a; padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { color: #10b981; }
+        .error { color: #ef4444; }
+        .info { color: #3b82f6; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Dashboard API Debug</h1>
+    <div>
+        <button onclick="testHealth()">Test Health</button>
+        <button onclick="testEmail()">Test Email</button>
+        <button onclick="testMetrics()">Test Metrics</button>
+    </div>
+    <div id="logs" class="logs"></div>
+
+    <script>
+        const API_BASE = '/api/v1';
+        
+        function log(message, type = 'info') {
+            const logs = document.getElementById('logs');
+            const entry = document.createElement('div');
+            entry.className = `log ${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logs.appendChild(entry);
+            console.log(message);
+        }
+
+        async function testHealth() {
+            log('Testing health endpoint...', 'info');
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                log(`Response status: ${response.status}`, 'info');
+                const data = await response.json();
+                log(`Health: ${JSON.stringify(data)}`, 'success');
+            } catch (error) {
+                log(`Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testEmail() {
+            log('Testing email endpoint...', 'info');
+            try {
+                const response = await fetch(`${API_BASE}/test/email`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        to: 'solemanseher@gmail.com',
+                        subject: 'Debug Test',
+                        body: 'Test from debug page'
+                    })
+                });
+                log(`Response status: ${response.status}`, 'info');
+                const text = await response.text();
+                log(`Response text: ${text}`, 'info');
+                
+                try {
+                    const data = JSON.parse(text);
+                    if (response.ok) {
+                        log(`Success: ${data.message}`, 'success');
+                    } else {
+                        log(`Error: ${data.detail}`, 'error');
+                    }
+                } catch (e) {
+                    log(`JSON parse error: ${e.message}`, 'error');
+                }
+            } catch (error) {
+                log(`Fetch error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testMetrics() {
+            log('Testing metrics endpoint...', 'info');
+            try {
+                const response = await fetch(`${API_BASE}/metrics`);
+                const data = await response.json();
+                log(`Metrics: ${JSON.stringify(data)}`, 'success');
+            } catch (error) {
+                log(`Error: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-run tests on load
+        window.addEventListener('load', () => {
+            log('Page loaded, running health test...', 'info');
+            setTimeout(testHealth, 500);
+        });
+    </script>
+</body>
+</html>

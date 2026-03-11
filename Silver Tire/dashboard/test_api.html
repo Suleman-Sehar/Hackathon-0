@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test API</title>
+</head>
+<body>
+    <h1>API Test Page</h1>
+    <button onclick="testEmail()">Test Email</button>
+    <button onclick="testWhatsApp()">Test WhatsApp</button>
+    <button onclick="testLinkedIn()">Test LinkedIn</button>
+    <div id="result"></div>
+
+    <script>
+        async function testEmail() {
+            document.getElementById('result').innerHTML = 'Sending email...';
+            try {
+                const response = await fetch('/api/v1/test/email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        to: 'solemanseher@gmail.com',
+                        subject: 'Test from HTML',
+                        body: 'Test body'
+                    })
+                });
+                const data = await response.json();
+                document.getElementById('result').innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                console.log('Email result:', data);
+            } catch (error) {
+                document.getElementById('result').innerHTML = 'Error: ' + error.message;
+                console.error('Error:', error);
+            }
+        }
+
+        async function testWhatsApp() {
+            document.getElementById('result').innerHTML = 'Sending WhatsApp...';
+            try {
+                const response = await fetch('/api/v1/test/whatsapp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        phone: '+923322580130',
+                        message: 'Test message'
+                    })
+                });
+                const data = await response.json();
+                document.getElementById('result').innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                console.log('WhatsApp result:', data);
+            } catch (error) {
+                document.getElementById('result').innerHTML = 'Error: ' + error.message;
+                console.error('Error:', error);
+            }
+        }
+
+        async function testLinkedIn() {
+            document.getElementById('result').innerHTML = 'Posting to LinkedIn...';
+            try {
+                const response = await fetch('/api/v1/test/linkedin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        content: 'Test post from dashboard'
+                    })
+                });
+                const data = await response.json();
+                document.getElementById('result').innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                console.log('LinkedIn result:', data);
+            } catch (error) {
+                document.getElementById('result').innerHTML = 'Error: ' + error.message;
+                console.error('Error:', error);
+            }
+        }
+    </script>
+</body>
+</html>

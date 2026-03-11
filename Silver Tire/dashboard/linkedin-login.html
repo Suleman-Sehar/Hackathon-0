@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>LinkedIn Login Helper</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0077b5;
+            color: white;
+            text-align: center;
+            padding: 50px 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            padding: 40px;
+            border-radius: 20px;
+        }
+        h1 { font-size: 2.5rem; margin-bottom: 20px; }
+        .instructions {
+            background: white;
+            color: #333;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: left;
+        }
+        .steps {
+            margin: 20px 0;
+            padding-left: 20px;
+        }
+        .steps li {
+            margin: 10px 0;
+            font-size: 1.1rem;
+        }
+        .warning {
+            background: #ff6b6b;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        .success {
+            background: #51cf66;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        button {
+            background: #0077b5;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 10px;
+            font-weight: bold;
+        }
+        button:hover {
+            background: #005582;
+        }
+        .spinner {
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💼 LinkedIn Login Helper</h1>
+        <p>Login to LinkedIn to enable autonomous posting</p>
+
+        <div class="warning">
+            ⚠️ FIRST TIME SETUP REQUIRED<br>
+            You need to login to LinkedIn once
+        </div>
+
+        <div class="instructions">
+            <h2>📋 How to Login:</h2>
+            <ol class="steps">
+                <li><strong style="color: #0077b5;">IMPORTANT: Use Google Chrome for login!</strong></li>
+                <li>Click <strong>"Open LinkedIn in Chrome"</strong> button below</li>
+                <li><strong>Chrome</strong> will open LinkedIn login page</li>
+                <li>Enter your LinkedIn credentials in <strong>Chrome</strong>:
+                    <ul>
+                        <li>Email or Phone</li>
+                        <li>Password</li>
+                    </ul>
+                </li>
+                <li>Click "Sign in"</li>
+                <li>If verification required, complete it</li>
+                <li>Once on your feed, navigate around for 10 seconds</li>
+                <li>Check "Stay signed in" if asked</li>
+                <li><strong>Keep Chrome open</strong> - don't close it</li>
+                <li>Come back here and click "Test LinkedIn Post"</li>
+            </ol>
+            <div style="background: #fff3cd; padding: 15px; border-left: 4px solid #ffc107; margin: 15px 0;">
+                <strong>⚠️ IMPORTANT:</strong> You must login in <strong>Google Chrome</strong>, not Internet Explorer or Edge!<br>
+                The automation uses Chrome, so the login session must be in Chrome.
+            </div>
+        </div>
+
+        <button onclick="openLinkedIn()">🌐 Open LinkedIn (Auto)</button>
+        <button onclick="downloadLauncher()">📥 Download Chrome Launcher</button>
+        <button onclick="testLinkedIn()">✅ Test LinkedIn Post</button>
+        <button onclick="checkSession()">🔍 Check Session</button>
+        
+        <div id="launcherStatus" style="margin-top: 20px;"></div>
+
+        <div id="status" style="margin-top: 30px;"></div>
+    </div>
+
+    <script>
+        async function openLinkedIn() {
+            const status = document.getElementById('status');
+            status.innerHTML = '<div class="spinner"></div><p>Opening LinkedIn in Chrome...</p>';
+            
+            try {
+                const response = await fetch('/api/v1/linkedin/open-chrome', {
+                    method: 'POST'
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.status === 'success') {
+                    status.innerHTML = `
+                        <div class="success">
+                            ✅ ${result.message}<br><br>
+                            <strong>NEXT STEPS:</strong><br>
+                            1. <strong>Chrome should be opening</strong><br>
+                            2. Login to LinkedIn IN CHROME<br>
+                            3. Navigate to your feed<br>
+                            4. Stay for 10 seconds<br>
+                            5. <strong>KEEP CHROME OPEN!</strong><br>
+                            6. Come back and click "Test LinkedIn Post"
+                        </div>
+                        <div style="background: #fff3cd; padding: 15px; border-left: 4px solid #ffc107; margin: 15px 0;">
+                            <strong>⚠️ IMPORTANT:</strong><br>
+                            If Chrome didn't open automatically:<br>
+                            1. Go to: <code>D:\\Hackathon 0\\Silver Tire</code><br>
+                            2. Double-click: <code>launch_linkedin_chrome.py</code><br>
+                            3. OR double-click: <code>open-linkedin-chrome.bat</code><br>
+                            4. Login in Chrome<br>
+                            5. Keep Chrome open
+                        </div>
+                    `;
+                } else {
+                    status.innerHTML = `
+                        <div class="warning">
+                            ❌ Error: ${result.detail || 'Failed to open Chrome'}<br><br>
+                            <strong>Manual Method:</strong><br>
+                            1. Open Google Chrome manually<br>
+                            2. Go to: linkedin.com/login<br>
+                            3. Login in Chrome<br>
+                            4. Keep Chrome open<br>
+                            5. Click "Test LinkedIn Post"
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                status.innerHTML = `
+                    <div class="warning">
+                        ❌ Error: ${error.message}<br><br>
+                        <strong>Use Batch File Instead:</strong><br>
+                        1. Go to: <code>D:\\Hackathon 0\\Silver Tire</code><br>
+                        2. Double-click: <code>open-linkedin-chrome.bat</code><br>
+                        3. Login in Chrome<br>
+                        4. Keep Chrome open
+                    </div>
+                `;
+            }
+        }
+
+        async function testLinkedIn() {
+            const status = document.getElementById('status');
+            status.innerHTML = '<div class="spinner"></div><p>Testing LinkedIn post...</p>';
+            
+            try {
+                const response = await fetch('/api/v1/test/linkedin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        content: 'Testing LinkedIn post after login! #Test'
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.status === 'success') {
+                    status.innerHTML = `
+                        <div class="success">
+                            ✅ SUCCESS! LinkedIn is working!<br><br>
+                            Post published to your profile!<br>
+                            You can now use LinkedIn posting from the dashboard!
+                        </div>
+                    `;
+                } else {
+                    status.innerHTML = `
+                        <div class="warning">
+                            ❌ Error: ${result.detail || 'Failed to post'}<br><br>
+                            ${result.detail.includes('login') ? 'You need to login first!' : 'Try again or check logs'}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                status.innerHTML = `
+                    <div class="warning">
+                        ❌ Error: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        function downloadLauncher() {
+            const launcherStatus = document.getElementById('launcherStatus');
+            launcherStatus.innerHTML = `
+                <div class="success">
+                    <strong>📥 Chrome Launcher Ready!</strong><br><br>
+                    <strong>Option 1: Download & Run (Recommended)</strong><br>
+                    1. Go to: <code>D:\\Hackathon 0\\Silver Tire</code><br>
+                    2. Double-click: <code>open-linkedin-chrome.bat</code><br>
+                    3. Chrome will open with LinkedIn login<br>
+                    4. Login in Chrome<br>
+                    5. Come back and click "Test LinkedIn Post"<br><br>
+                    
+                    <strong>Option 2: Manual (If batch doesn't work)</strong><br>
+                    1. Open Google Chrome manually<br>
+                    2. Go to: linkedin.com/login<br>
+                    3. Login in Chrome<br>
+                    4. Navigate to feed<br>
+                    5. Keep Chrome open<br>
+                    6. Click "Test LinkedIn Post"
+                </div>
+            `;
+        }
+
+        async function checkSession() {
+            const status = document.getElementById('status');
+            status.innerHTML = '<div class="spinner"></div><p>Checking session...</p>';
+            
+            try {
+                const response = await fetch('/api/v1/linkedin/session');
+                const data = await response.json();
+                
+                if (data.exists && data.file_count > 5) {
+                    status.innerHTML = `
+                        <div class="success">
+                            ✅ Session found! (${data.file_count} files)<br>
+                            LinkedIn should work. Try testing.
+                        </div>
+                    `;
+                } else {
+                    status.innerHTML = `
+                        <div class="warning">
+                            ⚠️ No session found<br>
+                            ${data.exists ? `Only ${data.file_count} files (incomplete)` : 'Session folder empty'}<br>
+                            You need to login first!
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                status.innerHTML = `
+                    <div class="warning">
+                        ❌ Error checking session: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Auto-check session on load
+        window.addEventListener('load', () => {
+            setTimeout(checkSession, 500);
+        });
+    </script>
+</body>
+</html>

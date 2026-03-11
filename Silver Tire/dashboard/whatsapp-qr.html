@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>WhatsApp QR Scanner</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #00a884;
+            color: white;
+            text-align: center;
+            padding: 50px 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            padding: 40px;
+            border-radius: 20px;
+        }
+        h1 { font-size: 2.5rem; margin-bottom: 20px; }
+        .instructions {
+            background: white;
+            color: #333;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: left;
+        }
+        .steps {
+            margin: 20px 0;
+            padding-left: 20px;
+        }
+        .steps li {
+            margin: 10px 0;
+            font-size: 1.1rem;
+        }
+        .warning {
+            background: #ff6b6b;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        .success {
+            background: #51cf66;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        button {
+            background: #25d366;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 10px;
+            font-weight: bold;
+        }
+        button:hover {
+            background: #128c7e;
+        }
+        .spinner {
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📱 WhatsApp QR Scanner</h1>
+        <p>Scan QR code to enable WhatsApp messaging</p>
+
+        <div class="warning">
+            ⚠️ FIRST TIME SETUP REQUIRED<br>
+            You need to scan QR code with your phone
+        </div>
+
+        <div class="instructions">
+            <h2>📋 How to Scan QR Code:</h2>
+            <ol class="steps">
+                <li>Click <strong>"Open WhatsApp Web"</strong> button below</li>
+                <li>Browser will open with WhatsApp Web</li>
+                <li>QR code will appear on screen</li>
+                <li>Take your phone and:
+                    <ul>
+                        <li>Open WhatsApp app</li>
+                        <li>Go to <strong>Settings</strong> (iPhone) or <strong>⋮ Menu</strong> (Android)</li>
+                        <li>Tap <strong>Linked Devices</strong></li>
+                        <li>Tap <strong>Link a Device</strong></li>
+                        <li>Point phone camera at QR code on screen</li>
+                    </ul>
+                </li>
+                <li>Wait for login (5-10 seconds)</li>
+                <li>Check <strong>"Keep me signed in"</strong> if asked</li>
+                <li>Close browser when done</li>
+            </ol>
+        </div>
+
+        <button onclick="openWhatsApp()">🔓 Open WhatsApp Web</button>
+        <button onclick="testWhatsApp()">✅ Test WhatsApp</button>
+        <button onclick="checkSession()">🔍 Check Session</button>
+
+        <div id="status" style="margin-top: 30px;"></div>
+    </div>
+
+    <script>
+        function openWhatsApp() {
+            const status = document.getElementById('status');
+            status.innerHTML = '<div class="spinner"></div><p>Opening WhatsApp Web...</p>';
+            
+            // Open WhatsApp Web in new window
+            const win = window.open('https://web.whatsapp.com', '_blank');
+            
+            setTimeout(() => {
+                status.innerHTML = `
+                    <div class="success">
+                        ✅ WhatsApp Web opened!<br><br>
+                        <strong>Now:</strong><br>
+                        1. Scan QR code with your phone<br>
+                        2. Wait for login<br>
+                        3. Close the WhatsApp Web tab<br>
+                        4. Come back here and click "Test WhatsApp"
+                    </div>
+                `;
+            }, 3000);
+        }
+
+        async function testWhatsApp() {
+            const status = document.getElementById('status');
+            status.innerHTML = '<div class="spinner"></div><p>Testing WhatsApp...</p>';
+            
+            try {
+                const response = await fetch('/api/v1/test/whatsapp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        phone: '923322580130',
+                        message: 'Test message after QR scan!'
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.status === 'success') {
+                    status.innerHTML = `
+                        <div class="success">
+                            ✅ SUCCESS! WhatsApp is working!<br><br>
+                            Message sent to +923322580130<br>
+                            You can now use WhatsApp from the dashboard!
+                        </div>
+                    `;
+                } else {
+                    status.innerHTML = `
+                        <div class="warning">
+                            ❌ Error: ${result.detail || 'Failed to send'}<br><br>
+                            ${result.detail.includes('QR') ? 'You need to scan QR code first!' : 'Try again or check logs'}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                status.innerHTML = `
+                    <div class="warning">
+                        ❌ Error: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        async function checkSession() {
+            const status = document.getElementById('status');
+            status.innerHTML = '<div class="spinner"></div><p>Checking session...</p>';
+            
+            try {
+                const response = await fetch('/api/v1/whatsapp/session');
+                const data = await response.json();
+                
+                if (data.exists && data.file_count > 5) {
+                    status.innerHTML = `
+                        <div class="success">
+                            ✅ Session found! (${data.file_count} files)<br>
+                            WhatsApp should work. Try testing.
+                        </div>
+                    `;
+                } else {
+                    status.innerHTML = `
+                        <div class="warning">
+                            ⚠️ No session found<br>
+                            ${data.exists ? `Only ${data.file_count} files (incomplete)` : 'Session folder empty'}<br>
+                            You need to scan QR code first!
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                status.innerHTML = `
+                    <div class="warning">
+                        ❌ Error checking session: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Auto-check session on load
+        window.addEventListener('load', () => {
+            setTimeout(checkSession, 500);
+        });
+    </script>
+</body>
+</html>

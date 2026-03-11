@@ -1,12 +1,14 @@
 """
 AI Employee Orchestrator - Silver Tier
 Coordinates watchers, MCP tools, and scheduled tasks.
+Integrated with Silver Tier Dashboard for real-time monitoring.
 """
 import sys
 import time
 import schedule
 from pathlib import Path
 from datetime import datetime
+import json
 
 # Add Silver Tire to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
@@ -15,6 +17,43 @@ sys.path.insert(0, str(Path(__file__).parent))
 from mcp.email_mcp import process_approved_emails, send_daily_briefing
 from mcp.linkedin_post import process_approved_linkedin
 from mcp.whatsapp_mcp import process_approved_whatsapp
+
+# Dashboard integration
+DASHBOARD_LOG = Path(__file__).parent / "Logs"
+DASHBOARD_LOG.mkdir(parents=True, exist_ok=True)
+
+
+def log_to_dashboard(action: str, status: str, details: dict = None, error: str = None):
+    """Log action to dashboard audit log."""
+    today = datetime.now().strftime("%Y-%m-%d")
+    log_file = DASHBOARD_LOG / f"audit_{today}.json"
+    
+    entry = {
+        "timestamp": datetime.now().isoformat(),
+        "action": action,
+        "status": status,
+        "details": details or {},
+        "error": error
+    }
+    
+    # Load existing logs
+    logs = []
+    if log_file.exists():
+        try:
+            with open(log_file, "r", encoding="utf-8") as f:
+                logs = json.load(f)
+        except:
+            logs = []
+    
+    logs.append(entry)
+    
+    with open(log_file, "w", encoding="utf-8") as f:
+        json.dump(logs, f, indent=2, ensure_ascii=False)
+    
+    # Print to console
+    icon = "✅" if status == "success" else "❌" if status == "error" else "ℹ️"
+    print(f"[{datetime.now().strftime('%H:%M:%S')}] {icon} {action}: {status}")
+
 
 class Orchestrator:
     def __init__(self):

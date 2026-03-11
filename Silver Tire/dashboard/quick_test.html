@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Silver Tier - Quick Test</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 { color: #667eea; margin-bottom: 10px; }
+        p { color: #666; margin-bottom: 30px; }
+        .button-group { display: flex; gap: 10px; flex-wrap: wrap; }
+        button {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .btn-email { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
+        .btn-whatsapp { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; }
+        .btn-linkedin { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white; }
+        .btn-metrics { background: #667eea; color: white; }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        .result.show { display: block; }
+        .result.success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .result.error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        .result.info { background: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 10px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        pre { background: #f5f5f5; padding: 10px; border-radius: 5px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🚀 Silver Tier Dashboard - API Test</h1>
+        <p>Test the backend API endpoints directly from this page</p>
+        
+        <div class="button-group">
+            <button class="btn-email" onclick="testEmail()">📧 Test Email</button>
+            <button class="btn-whatsapp" onclick="testWhatsApp()">💬 Test WhatsApp</button>
+            <button class="btn-linkedin" onclick="testLinkedIn()">💼 Test LinkedIn</button>
+            <button class="btn-metrics" onclick="getMetrics()">📊 Get Metrics</button>
+        </div>
+        
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        const API_BASE = '/api/v1';
+        
+        function showResult(message, type = 'info', isLoading = false) {
+            const result = document.getElementById('result');
+            result.className = `result show ${type}`;
+            result.innerHTML = isLoading ? `<span class="spinner"></span>${message}` : message;
+        }
+
+        async function testEmail() {
+            showResult('Sending email...', 'info', true);
+            
+            try {
+                const response = await fetch(`${API_BASE}/test/email`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        to: 'solemanseher@gmail.com',
+                        subject: 'Test from Quick Test Page',
+                        body: 'This is a test email sent from the quick test page.\n\nTimestamp: ' + new Date().toLocaleString()
+                    })
+                });
+                
+                console.log('Response status:', response.status);
+                const text = await response.text();
+                console.log('Response text:', text);
+                
+                let data;
+                try {
+                    data = JSON.parse(text);
+                } catch (e) {
+                    throw new Error('Invalid JSON response: ' + text);
+                }
+                
+                if (response.ok && data.status === 'success') {
+                    showResult(`✅ <strong>Success!</strong><br>${data.message}`, 'success');
+                } else {
+                    showResult(`❌ <strong>Error:</strong> ${data.detail || 'Unknown error'}`, 'error');
+                }
+            } catch (error) {
+                console.error('Email error:', error);
+                showResult(`❌ <strong>Error:</strong> ${error.message}`, 'error');
+            }
+        }
+
+        async function testWhatsApp() {
+            showResult('Sending WhatsApp message (browser will open)...', 'info', true);
+            
+            try {
+                const response = await fetch(`${API_BASE}/test/whatsapp`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        phone: '+923322580130',
+                        message: 'Test message from Silver Tier quick test page!\n\nTimestamp: ' + new Date().toLocaleString()
+                    })
+                });
+                
+                const text = await response.text();
+                let data = JSON.parse(text);
+                
+                if (response.ok && data.status === 'success') {
+                    showResult(`✅ <strong>Success!</strong><br>${data.message}`, 'success');
+                } else {
+                    showResult(`❌ <strong>Error:</strong> ${data.detail || 'Unknown error'}`, 'error');
+                }
+            } catch (error) {
+                console.error('WhatsApp error:', error);
+                showResult(`❌ <strong>Error:</strong> ${error.message}`, 'error');
+            }
+        }
+
+        async function testLinkedIn() {
+            showResult('Creating LinkedIn post (browser will open)...', 'info', true);
+            
+            try {
+                const response = await fetch(`${API_BASE}/test/linkedin`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        content: 'Test post from Silver Tier Dashboard! 🚀\n\n#AI #Automation #Testing'
+                    })
+                });
+                
+                const text = await response.text();
+                let data = JSON.parse(text);
+                
+                if (response.ok && data.status === 'success') {
+                    showResult(`✅ <strong>Success!</strong><br>${data.message}`, 'success');
+                } else {
+                    showResult(`❌ <strong>Error:</strong> ${data.detail || 'Unknown error'}`, 'error');
+                }
+            } catch (error) {
+                console.error('LinkedIn error:', error);
+                showResult(`❌ <strong>Error:</strong> ${error.message}`, 'error');
+            }
+        }
+
+        async function getMetrics() {
+            showResult('Loading metrics...', 'info', true);
+            
+            try {
+                const response = await fetch(`${API_BASE}/metrics`);
+                const data = await response.json();
+                
+                showResult(`
+                    <strong>Today's Metrics:</strong><br>
+                    📧 Emails: ${data.emails_sent || 0}<br>
+                    💬 WhatsApp: ${data.whatsapp_sent || 0}<br>
+                    💼 LinkedIn: ${data.linkedin_posts || 0}<br>
+                    📊 Total: ${data.total_actions || 0}
+                `, 'success');
+            } catch (error) {
+                showResult(`❌ <strong>Error:</strong> ${error.message}`, 'error');
+            }
+        }
+
+        // Run health check on load
+        window.addEventListener('load', async () => {
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                const data = await response.json();
+                console.log('API Health:', data);
+                showResult(`✅ API is ${data.status} - Ready to test!`, 'success');
+            } catch (error) {
+                showResult(`❌ API Error: ${error.message}`, 'error');
+            }
+        });
+    </script>
+</body>
+</html>

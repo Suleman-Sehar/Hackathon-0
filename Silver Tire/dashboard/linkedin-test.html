@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LinkedIn Test</title>
+    <style>
+        body { font-family: Arial; padding: 40px; background: #0077b5; color: white; }
+        .card { background: white; color: #333; padding: 30px; border-radius: 10px; max-width: 600px; margin: 0 auto; }
+        button { background: #0077b5; color: white; border: none; padding: 15px 30px; font-size: 16px; border-radius: 5px; cursor: pointer; margin: 10px 5px; }
+        button:hover { background: #005582; }
+        #result { margin-top: 20px; padding: 15px; border-radius: 5px; display: none; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        textarea { width: 100%; padding: 10px; margin: 10px 0; border: 2px solid #ddd; border-radius: 5px; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>💼 LinkedIn Post Test</h1>
+        <p>This will test the LinkedIn posting endpoint directly</p>
+        
+        <textarea id="content" rows="5" placeholder="Enter your post content...">Test post from simple test page!</textarea>
+        
+        <button onclick="testPost()">📝 Test Post</button>
+        <button onclick="openLinkedIn()">🌐 Open LinkedIn</button>
+        
+        <div id="result"></div>
+    </div>
+
+    <script>
+        async function testPost() {
+            const content = document.getElementById('content').value;
+            const result = document.getElementById('result');
+            
+            result.style.display = 'block';
+            result.className = '';
+            result.textContent = 'Sending...';
+            
+            try {
+                const response = await fetch('/api/v1/test/linkedin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content: content })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.status === 'success') {
+                    result.className = 'success';
+                    result.textContent = '✅ SUCCESS: ' + data.message;
+                } else {
+                    result.className = 'error';
+                    result.textContent = '❌ ERROR: ' + (data.detail || 'Unknown error');
+                }
+            } catch (error) {
+                result.className = 'error';
+                result.textContent = '❌ ERROR: ' + error.message;
+            }
+        }
+
+        function openLinkedIn() {
+            window.open('https://www.linkedin.com/feed/', '_blank');
+        }
+    </script>
+</body>
+</html>

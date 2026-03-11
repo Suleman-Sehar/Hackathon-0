@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Silver Tier - WORKING Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        .header p { color: #666; }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .card h2 {
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .platform-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            border: 2px solid #e9ecef;
+        }
+        .platform-card h3 {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+        .btn-info {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+        }
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+        }
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1000;
+        }
+        .toast.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+        .toast.success { border-left: 4px solid #10b981; }
+        .toast.error { border-left: 4px solid #ef4444; }
+        .toast.info { border-left: 4px solid #3b82f6; }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        .status.success { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+        .status.error { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+        .activity-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid #667eea;
+        }
+        .log-box {
+            background: #1e293b;
+            color: #f1f5f9;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 13px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✅ Silver Tier Dashboard - WORKING VERSION</h1>
+            <p>All buttons are functional - Hard refresh: Ctrl+Shift+R</p>
+        </div>
+
+        <!-- Email Card -->
+        <div class="card">
+            <h2>📧 Gmail</h2>
+            <div class="platform-card">
+                <h3><i class="fas fa-envelope"></i> Email Actions</h3>
+                <div style="margin: 15px 0;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Recipient Email:</label>
+                    <input type="email" id="emailTo" value="solemanseher@gmail.com" 
+                           style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px;"
+                           placeholder="Enter recipient email (e.g., user@example.com)">
+                </div>
+                <div style="margin: 15px 0;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Subject:</label>
+                    <input type="text" id="emailSubject" value="Test from Dashboard" 
+                           style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px;"
+                           placeholder="Enter email subject">
+                </div>
+                <div style="margin: 15px 0;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Message:</label>
+                    <textarea id="emailBody" rows="4" 
+                              style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px;"
+                              placeholder="Enter your email message">This is a test email from the Silver Tier Dashboard.</textarea>
+                </div>
+                <button class="btn btn-primary" onclick="sendEmailCustom()">📧 Send Email</button>
+                <button class="btn btn-info" onclick="viewLogs()">📋 View Logs</button>
+                <p style="margin-top: 15px; color: #666; font-size: 13px;">
+                    <strong>How to use:</strong><br>
+                    1. Enter recipient email address<br>
+                    2. Enter email subject<br>
+                    3. Enter your message<br>
+                    4. Click "Send Email"<br>
+                    5. Email sends via Gmail SMTP<br>
+                    <strong>Note:</strong> Uses your configured Gmail account
+                </p>
+            </div>
+        </div>
+
+        <!-- WhatsApp Card -->
+        <div class="card">
+            <h2>💬 WhatsApp</h2>
+            <div class="platform-card">
+                <h3><i class="fab fa-whatsapp"></i> WhatsApp Actions</h3>
+                <div style="margin: 15px 0;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Phone Number:</label>
+                    <input type="text" id="whatsappPhone" value="923322580130" 
+                           style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px;"
+                           placeholder="Enter phone with country code (e.g., 923322580130)">
+                </div>
+                <div style="margin: 15px 0;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Message:</label>
+                    <textarea id="whatsappMessage" rows="3" 
+                              style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px;"
+                              placeholder="Enter your message">Test message from dashboard!</textarea>
+                </div>
+                <button class="btn btn-primary" onclick="testWhatsAppCustom()">💬 Send WhatsApp</button>
+                <button class="btn btn-info" onclick="viewLogs()">📋 View Logs</button>
+                <p style="margin-top: 15px; color: #666; font-size: 13px;">
+                    <strong>How to use:</strong><br>
+                    1. Enter phone number with country code (e.g., 923322580130)<br>
+                    2. Enter your message<br>
+                    3. Click "Send WhatsApp"<br>
+                    4. WhatsApp opens in Chrome with message pre-filled<br>
+                    5. Press Enter to send<br>
+                    <strong>Note:</strong> Uses your existing WhatsApp Web login!
+                </p>
+            </div>
+        </div>
+
+        <!-- LinkedIn Card -->
+        <div class="card">
+            <h2>💼 LinkedIn</h2>
+            <div class="platform-card">
+                <h3><i class="fab fa-linkedin"></i> LinkedIn Actions</h3>
+                
+                <!-- Post Section -->
+                <div style="margin: 15px 0; padding: 15px; background: #f0f8ff; border-radius: 10px;">
+                    <h4 style="margin-bottom: 10px; color: #0077b5;">📝 Create Post</h4>
+                    <textarea id="linkedinContent" rows="4" 
+                              style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px;"
+                              placeholder="Enter your LinkedIn post content...">🚀 Exciting update from Silver Tier Dashboard!</textarea>
+                    <button class="btn btn-primary" onclick="postLinkedInCustom()" style="margin-top: 10px;">💼 Post to LinkedIn (Autonomous)</button>
+                </div>
+                
+                <p style="margin-top: 10px; color: #666; font-size: 13px; background: #d4edda; padding: 10px; border-radius: 5px;">
+                    <strong>📝 How to post:</strong> Click button → AI opens Chrome → AI logs in → AI creates post → AI publishes → Done! (60-90 seconds)
+                </p>
+                
+                <!-- Message Section -->
+                <div style="margin: 15px 0; padding: 15px; background: #f0fff0; border-radius: 10px;">
+                    <h4 style="margin-bottom: 10px; color: #28a745;">💬 Send Message</h4>
+                    <div style="margin: 10px 0;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Connection Name:</label>
+                        <input type="text" id="linkedinMessageTo" 
+                               style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px;"
+                               placeholder="Enter connection name (e.g., John Doe)">
+                    </div>
+                    <div style="margin: 10px 0;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Message:</label>
+                        <textarea id="linkedinMessageContent" rows="3" 
+                                  style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px;"
+                                  placeholder="Enter your message...">Hi! I'd like to connect with you.</textarea>
+                    </div>
+                    <button class="btn btn-success" onclick="sendLinkedInMessage()" style="margin-top: 10px;">💬 Send Message</button>
+                    <p style="margin-top: 10px; color: #666; font-size: 12px;">
+                        <strong>ℹ️ Note:</strong> LinkedIn messaging will open. Type the connection name in the search box and send your message manually.
+                    </p>
+                </div>
+                
+                <button class="btn btn-info" onclick="viewLogs()" style="margin-top: 10px;">📋 View Logs</button>
+                <p style="margin-top: 15px; color: #666; font-size: 13px;">
+                    <strong>How to use:</strong><br>
+                    1. <strong>First time:</strong> Login to LinkedIn in Chrome<br>
+                    2. <strong>To Post:</strong> Enter content and click "Post to LinkedIn"<br>
+                    3. <strong>To Message:</strong> Enter connection name and message, click "Send Message"<br>
+                    4. Browser opens LinkedIn for posting/messaging
+                </p>
+            </div>
+        </div>
+
+        <!-- Activity Feed -->
+        <div class="card">
+            <h2>📊 Recent Activity</h2>
+            <button class="btn btn-success" onclick="loadActivity()">🔄 Refresh Activity</button>
+            <div id="activityFeed" style="margin-top: 15px;">
+                <p style="color: #666;">Click "Refresh Activity" to load recent actions</p>
+            </div>
+        </div>
+
+        <!-- Console Log -->
+        <div class="card">
+            <h2>🔍 Console Log</h2>
+            <div class="log-box" id="consoleLog">
+                <div>System ready...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const API_BASE = '/api/v1';
+        
+        function log(message) {
+            const logBox = document.getElementById('consoleLog');
+            const entry = document.createElement('div');
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logBox.appendChild(entry);
+            logBox.scrollTop = logBox.scrollHeight;
+            console.log(message);
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast show ${type}`;
+            log(`Notification: ${message}`);
+            setTimeout(() => {
+                toast.className = 'toast';
+            }, 5000);
+        }
+
+        async function sendEmailCustom() {
+            const to = document.getElementById('emailTo').value;
+            const subject = document.getElementById('emailSubject').value;
+            const body = document.getElementById('emailBody').value;
+            
+            if (!to || !subject || !body) {
+                showToast('❌ Please fill in all fields!', 'error');
+                return;
+            }
+            
+            // Validate email format
+            if (!to.includes('@') || !to.includes('.')) {
+                showToast('❌ Please enter a valid email address!', 'error');
+                return;
+            }
+            
+            log('📧 Sending email to ' + to + '...');
+            showToast('📧 Sending email to ' + to + '...', 'info');
+            
+            try {
+                const response = await fetch(`${API_BASE}/test/email`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        to: to,  // Use custom recipient
+                        subject: subject,  // Use custom subject
+                        body: body  // Use custom message
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.status === 'success') {
+                    showToast('✅ Email sent to ' + to + '!', 'success');
+                    loadActivity();
+                } else {
+                    showToast('❌ Error: ' + (result.detail || 'Failed to send'), 'error');
+                }
+            } catch (error) {
+                log('Email error: ' + error.message);
+                showToast('❌ Error: ' + error.message, 'error');
+            }
+        }
+
+        async function testEmail() {
+            log('📧 Sending test email...');
+            showToast('📧 Sending email to solemanseher@gmail.com...', 'info');
+            
+            try {
+                const response = await fetch(`${API_BASE}/test/email`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        to: 'solemanseher@gmail.com',
+                        subject: 'Test from Working Dashboard',
+                        body: 'This is a test email sent from the working dashboard.\n\nTimestamp: ' + new Date().toLocaleString()
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.status === 'success') {
+                    showToast('✅ Email sent successfully!', 'success');
+                    loadActivity();
+                } else {
+                    showToast('❌ Error: ' + (result.detail || 'Failed'), 'error');
+                }
+            } catch (error) {
+                log('Email error: ' + error.message);
+                showToast('❌ Error: ' + error.message, 'error');
+            }
+        }
+
+        async function testWhatsAppCustom() {
+            const phone = document.getElementById('whatsappPhone').value;
+            const message = document.getElementById('whatsappMessage').value;
+            
+            if (!phone || !message) {
+                showToast('❌ Please enter both phone and message!', 'error');
+                return;
+            }
+            
+            log('💬 Sending WhatsApp to ' + phone + '...');
+            showToast('💬 Sending WhatsApp to ' + phone + '...', 'info');
+            
+            try {
+                const response = await fetch(`${API_BASE}/test/whatsapp`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        phone: phone,  // Use custom phone from input
+                        message: message  // Use custom message
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.status === 'success') {
+                    showToast('✅ ' + result.message, 'success');
+                    loadActivity();
+                } else {
+                    showToast('❌ Error: ' + (result.detail || 'Failed'), 'error');
+                }
+            } catch (error) {
+                log('WhatsApp error: ' + error.message);
+                showToast('❌ Error: ' + error.message, 'error');
+            }
+        }
+
+        async function testWhatsApp() {
+            log('💬 Sending WhatsApp message...');
+            showToast('💬 Sending WhatsApp to 923322580130...', 'info');
+            
+            try {
+                const response = await fetch(`${API_BASE}/test/whatsapp`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        phone: '923322580130',  // String format
+                        message: 'Test message from working dashboard!\n\nTimestamp: ' + new Date().toLocaleString()
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.status === 'success') {
+                    showToast('✅ WhatsApp sent successfully!', 'success');
+                    loadActivity();
+                } else {
+                    showToast('❌ Error: ' + (result.detail || 'Failed'), 'error');
+                }
+            } catch (error) {
+                log('WhatsApp error: ' + error.message);
+                showToast('❌ Error: ' + error.message, 'error');
+            }
+        }
+
+        async function postLinkedInCustom() {
+            const content = document.getElementById('linkedinContent').value;
+            
+            if (!content || content.trim().length === 0) {
+                showToast('❌ Please enter post content!', 'error');
+                return;
+            }
+            
+            if (content.trim().length > 3000) {
+                showToast('❌ Post too long! LinkedIn limit is 3000 characters.', 'error');
+                return;
+            }
+            
+            log('💼 Opening LinkedIn...');
+            showToast('💼 Opening LinkedIn in Chrome...', 'info');
+            
+            try {
+                const response = await fetch(`${API_BASE}/test/linkedin`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        content: content  // Use custom post content
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.status === 'success') {
+                    showToast('✅ ' + result.message, 'success');
+                    loadActivity();
+                } else {
+                    showToast('❌ Error: ' + (result.detail || 'Failed to open LinkedIn'), 'error');
+                }
+            } catch (error) {
+                log('LinkedIn error: ' + error.message);
+                showToast('❌ Error: ' + error.message, 'error');
+            }
+        }
+
+        async function sendLinkedInMessage() {
+            const messageTo = document.getElementById('linkedinMessageTo').value;
+            const messageContent = document.getElementById('linkedinMessageContent').value;
+            
+            if (!messageTo || !messageContent) {
+                showToast('❌ Please enter both connection name and message!', 'error');
+                return;
+            }
+            
+            log('💬 Sending LinkedIn message to ' + messageTo + '...');
+            showToast('💬 Opening LinkedIn messaging...', 'info');
+            
+            try {
+                const response = await fetch(`${API_BASE}/linkedin/message`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        content: messageContent,
+                        message_to: messageTo,
+                        message_content: messageContent
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.status === 'success') {
+                    showToast('✅ ' + result.message, 'success');
+                    loadActivity();
+                } else {
+                    const errorMsg = result.detail || result.message || 'Failed to open messaging';
+                    showToast('❌ Error: ' + errorMsg, 'error');
+                }
+            } catch (error) {
+                log('LinkedIn message error: ' + error.message);
+                showToast('❌ Error: ' + error.message, 'error');
+            }
+        }
+
+        async function testLinkedIn() {
+            log('💼 Creating LinkedIn post...');
+            showToast('💼 Posting to LinkedIn...', 'info');
+            
+            try {
+                const response = await fetch(`${API_BASE}/test/linkedin`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        content: 'Test post from working dashboard! 🚀\n\n#AI #Automation #Testing'
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.status === 'success') {
+                    showToast('✅ LinkedIn post published!', 'success');
+                    loadActivity();
+                } else {
+                    showToast('❌ Error: ' + (result.detail || 'Failed'), 'error');
+                }
+            } catch (error) {
+                log('LinkedIn error: ' + error.message);
+                showToast('❌ Error: ' + error.message, 'error');
+            }
+        }
+
+        async function loadActivity() {
+            log('📊 Loading activity feed...');
+            const feedEl = document.getElementById('activityFeed');
+            feedEl.innerHTML = '<p>Loading...</p>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/activity?limit=10`);
+                const logs = await response.json();
+                
+                if (logs.length === 0) {
+                    feedEl.innerHTML = '<p>No recent activity</p>';
+                    return;
+                }
+                
+                feedEl.innerHTML = logs.map(log => {
+                    const statusClass = log.status === 'success' ? 'success' : 'error';
+                    const details = log.details || {};
+                    let recipient = '';
+                    
+                    if (log.action === 'send_email') {
+                        recipient = `To: ${details.to || 'N/A'}`;
+                    } else if (log.action === 'send_whatsapp') {
+                        recipient = `Phone: ${details.phone || 'N/A'}`;
+                    } else if (log.action === 'post_linkedin') {
+                        recipient = 'Profile: LinkedIn';
+                    }
+                    
+                    return `
+                        <div class="activity-item">
+                            <strong>${log.action}</strong>
+                            <span class="status ${statusClass}">${log.status}</span>
+                            <div style="margin: 5px 0; color: #666;">${recipient}</div>
+                            <div style="font-size: 12px; color: #999;">🕐 ${new Date(log.timestamp).toLocaleString()}</div>
+                            ${log.error ? `<div style="color: #ef4444; margin-top: 5px;">⚠️ ${log.error}</div>` : ''}
+                        </div>
+                    `;
+                }).join('');
+                
+                log(`Loaded ${logs.length} activities`);
+            } catch (error) {
+                log('Error loading activity: ' + error.message);
+                feedEl.innerHTML = '<p>Error loading activity</p>';
+            }
+        }
+
+        function viewLogs() {
+            log('📋 Opening logs...');
+            window.open('Logs/', '_blank');
+            showToast('📋 Opening logs in new tab...', 'info');
+        }
+
+        // Auto-load activity on page load
+        window.addEventListener('load', () => {
+            log('Dashboard loaded successfully');
+            log('Server: ' + window.location.origin);
+            setTimeout(loadActivity, 500);
+        });
+    </script>
+</body>
+</html>

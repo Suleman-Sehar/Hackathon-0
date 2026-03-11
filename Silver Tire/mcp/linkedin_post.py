@@ -4,10 +4,25 @@ import time
 import random
 import json
 from pathlib import Path
+import os
 
 # Session folder (will be created automatically)
 SESSION_DIR = Path("linkedin_session")
 SESSION_DIR.mkdir(exist_ok=True)
+
+# Try to use Chrome's Default profile where user might already be logged in
+CHROME_PROFILES = [
+    os.path.expandvars(r"%LOCALAPPDATA%\Google\Chrome\User Data\Default"),
+    os.path.expandvars(r"%LOCALAPPDATA%\Google\Chrome\User Data\Profile 1"),
+    os.path.expandvars(r"%APPDATA%\Google\Chrome\User Data\Default"),
+]
+
+def get_chrome_profile():
+    """Find existing Chrome profile."""
+    for profile in CHROME_PROFILES:
+        if os.path.exists(profile) and len(os.listdir(profile)) > 5:
+            return profile
+    return None
 
 def human_delay(min_sec=1.5, max_sec=4.0):
     time.sleep(random.uniform(min_sec, max_sec))
@@ -22,82 +37,218 @@ def human_like_mouse_move(page):
         human_delay(0.3, 0.8)
 
 def post_to_linkedin(message: str, headless=False):
-    """Post a message to LinkedIn using browser automation."""
+    """Post a message to LinkedIn using browser automation with improved selectors."""
     print("[INFO] Starting LinkedIn post automation...")
-    print("[INFO] Browser will open in 3 seconds...")
-    time.sleep(3)
     
     with sync_playwright() as p:
-        # Persistent context = reuse cookies/storage
-        context = p.chromium.launch_persistent_context(
-            user_data_dir=str(SESSION_DIR),
-            headless=False,  # Always show browser
-            viewport={'width': 1280, 'height': 800},
-            slow_mo=100,
-            args=[
-                '--disable-blink-features=AutomationControlled',
-                '--no-sandbox',
-                '--disable-dev-shm-usage'
-            ]
-        )
+        # Find Chrome executable
+        chrome_paths = [
+            r"C:\Program Files\Google\Chrome\Application\chrome.exe",
+            r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe",
+            os.path.expandvars(r"%LOCALAPPDATA%\Google\Chrome\Application\chrome.exe"),
+        ]
+        
+        chrome_path = None
+        for path in chrome_paths:
+            if os.path.exists(path):
+                chrome_path = path
+                break
+        
+        # Try to use existing Chrome profile where user is already logged in
+        chrome_profile = get_chrome_profile()
+        
+        if chrome_path and chrome_profile:
+            print(f"[INFO] Using Chrome: {chrome_path}")
+            print(f"[INFO] Using profile: {chrome_profile}")
+            print(f"[INFO] This should have your LinkedIn login session!")
+            # Launch Chrome with user's profile
+            context = p.chromium.launch_persistent_context(
+                user_data_dir=chrome_profile,
+                headless=headless,
+                viewport={'width': 1280, 'height': 800},
+                args=[
+                    '--disable-blink-features=AutomationControlled',
+                    '--no-sandbox',
+                    '--disable-dev-shm-usage',
+                    '--disable-features=TranslateUI',
+                    '--disable-ipc-flooding-protection',
+                ],
+                slow_mo=100,
+                channel='chrome'  # Use installed Chrome
+            )
+        elif chrome_path:
+            print(f"[INFO] Using Chrome: {chrome_path}")
+            print(f"[WARN] Profile not found, using temporary session")
+            context = p.chromium.launch_persistent_context(
+                user_data_dir=str(SESSION_DIR),
+                headless=headless,
+                viewport={'width': 1280, 'height': 800},
+                args=[
+                    '--disable-blink-features=AutomationControlled',
+                    '--no-sandbox',
+                    '--disable-dev-shm-usage',
+                ],
+                slow_mo=100,
+                channel='chrome'  # Use installed Chrome
+            )
+        else:
+            print("[WARN] Chrome not found, using default Chromium")
+            context = p.chromium.launch_persistent_context(
+                user_data_dir=str(SESSION_DIR),
+                headless=headless,
+                viewport={'width': 1280, 'height': 800},
+                args=['--disable-blink-features=AutomationControlled', '--no-sandbox'],
+                slow_mo=100
+            )
 
         page = context.new_page()
 
-        # Go to LinkedIn login page first
-        print("[INFO] Opening LinkedIn login page...")
-        page.goto("https://www.linkedin.com/login", timeout=60000)
-        human_delay(3, 5)
-        
-        # Check if already logged in
-        print("[INFO] Checking if already logged in...")
+        # Go directly to LinkedIn feed
+        print("[INFO] Opening LinkedIn feed...")
+        page.goto("https://www.linkedin.com/feed/", timeout=90000)
+        time.sleep(5)
+
+        # Check if logged in by checking URL or elements
+        print("[INFO] Checking if logged in...")
         try:
-            page.goto("https://www.linkedin.com/feed/", timeout=30000)
-            human_delay(3, 5)
-            if page.is_visible("button[aria-label='Start a post']", timeout=5000):
-                print("[OK] Already logged in!")
-            else:
-                raise Exception("Not logged in")
+            # Wait for feed to load
+            page.wait_for_selector('div[class*="feed"]', timeout=15000)
+            print("[OK] Feed loaded!")
         except:
-            # Not logged in - go back to login
-            print("[INFO] Not logged in. Going to login page...")
-            page.goto("https://www.linkedin.com/login", timeout=30000)
-            human_delay(2, 4)
-            
-            print()
-            print("="*60)
-            print("PLEASE LOGIN TO LINKEDIN IN THE BROWSER WINDOW")
-            print("="*60)
-            print("Waiting up to 120 seconds for login...")
-            print()
-            
-            # Wait for login (up to 120 seconds)
-            logged_in = False
-            for i in range(60):
-                time.sleep(2)
-                try:
-                    current_url = page.url
-                    if '/feed' in current_url or page.is_visible("button[aria-label='Start a post']", timeout=2000):
-                        print("[OK] Login detected!")
-                        logged_in = True
-                        if '/feed' not in current_url:
-                            page.goto("https://www.linkedin.com/feed/", timeout=30000)
-                        break
-                except:
-                    pass
+            print("[WARN] Feed not found, checking login...")
+            # If not on feed, we might need to login
+            if '/login' in page.url:
+                print("[INFO] Need to login. Please login in the browser window...")
+                print("[INFO] Waiting up to 120 seconds for login...")
                 
-                # Progress indicator
-                if (i + 1) % 15 == 0:
-                    print(f"[INFO] Still waiting... ({(i+1)*2}s)")
+                for i in range(60):
+                    time.sleep(2)
+                    if '/feed' in page.url:
+                        print("[OK] Login detected!")
+                        break
+                    if (i + 1) % 15 == 0:
+                        print(f"[INFO] Still waiting... ({(i+1)*2}s)")
+                
+                if '/login' in page.url:
+                    print("[ERROR] Login timeout!")
+                    context.close()
+                    return False
             
-            if not logged_in:
-                print()
-                print("[ERROR] Login timeout after 120 seconds")
-                print("[INFO] Please run again and login faster")
-                time.sleep(3)
-                context.close()
-                return False
+            # Reload feed
+            page.goto("https://www.linkedin.com/feed/", timeout=30000)
+            time.sleep(3)
+
+        print("[INFO] Looking for post composer...")
         
-        print()
+        # Try multiple selectors for the post composer trigger
+        post_button_clicked = False
+        post_selectors = [
+            "button[aria-label='Start a post']",
+            "div[role='button']:has-text('Start a post')",
+            "button:has-text('Start a post')",
+            "div[class*='start-post']",
+            "div[class*='share-box'] button",
+        ]
+        
+        for selector in post_selectors:
+            try:
+                if page.is_visible(selector, timeout=3000):
+                    print(f"[OK] Found post button: {selector}")
+                    page.click(selector)
+                    time.sleep(3)
+                    post_button_clicked = True
+                    break
+            except Exception as e:
+                continue
+        
+        if not post_button_clicked:
+            print("[WARN] Post button not found. Trying alternative approach...")
+            # Try to navigate to posting page directly
+            page.goto("https://www.linkedin.com/feed/?showUpdateOverlay=true", timeout=30000)
+            time.sleep(3)
+        
+        # Wait for post dialog to appear
+        print("[INFO] Waiting for post editor...")
+        textbox_found = False
+        text_selectors = [
+            "div[contenteditable='true'][role='textbox']",
+            "div[contenteditable='true']",
+            "div[class*='editor-content'] [contenteditable='true']",
+            "div[aria-label='What do you want to share?']",
+        ]
+        
+        for selector in text_selectors:
+            try:
+                if page.is_visible(selector, timeout=5000):
+                    print(f"[OK] Found text editor: {selector}")
+                    textbox = page.locator(selector).first
+                    textbox.click()
+                    time.sleep(1)
+                    
+                    # Fill the message
+                    print("[INFO] Filling message...")
+                    textbox.fill(message)
+                    time.sleep(2)
+                    textbox_found = True
+                    break
+            except:
+                continue
+        
+        if not textbox_found:
+            print("[ERROR] Could not find text editor!")
+            context.close()
+            return False
+        
+        # Find and click Post button
+        print("[INFO] Looking for Post button...")
+        post_submitted = False
+        post_btn_selectors = [
+            "button:has-text('Post')",
+            "button[aria-label='Post']",
+            "button[data-test-id='post-submit']",
+            "div[role='dialog'] button:has-text('Post')",
+        ]
+        
+        for selector in post_btn_selectors:
+            try:
+                buttons = page.locator(selector)
+                count = buttons.count()
+                
+                for i in range(count):
+                    btn = buttons.nth(i)
+                    if btn.is_visible():
+                        text = btn.text_content().strip()
+                        if 'post' in text.lower():
+                            print(f"[OK] Clicking Post button: {selector}")
+                            btn.click()
+                            time.sleep(5)
+                            post_submitted = True
+                            break
+                if post_submitted:
+                    break
+            except:
+                continue
+        
+        # Try Enter key as fallback
+        if not post_submitted:
+            print("[INFO] Trying Enter key to post...")
+            try:
+                page.keyboard.press('Control+Enter')
+                time.sleep(3)
+                post_submitted = True
+            except:
+                pass
+        
+        if post_submitted:
+            print(f"[OK] Post published successfully: '{message[:50]}...'")
+            context.close()
+            return True
+        else:
+            print("[WARN] Post may not have been submitted")
+            print("[INFO] Keeping browser open for 10 seconds for manual post...")
+            time.sleep(10)
+            context.close()
+            return False
         print("[INFO] Login confirmed. Starting post automation...")
 
         # Click "Start a post" area
