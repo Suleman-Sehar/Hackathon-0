@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🥇 Gold Tier Dashboard - Autonomous AI Employee</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <div class="cyber-grid"></div>
+    <div class="particles" id="particles"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>GOLD TIER <span class="version">v3.0</span></h1>
+                    <p>Autonomous AI Employee Control Center</p>
+                </div>
+            </div>
+            <div class="header-status">
+                <div class="status-badge online">
+                    <div class="status-dot"></div>
+                    <span>ALL SYSTEMS OPERATIONAL</span>
+                </div>
+                <div class="datetime" id="currentDateTime"></div>
+                <button class="btn btn-refresh" onclick="refreshAllData()">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Ralph Wiggum Status Banner -->
+        <div class="ralph-banner">
+            <div class="ralph-content">
+                <div class="ralph-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <div class="ralph-info">
+                    <h2>RALPH WIGGUM AUTONOMOUS LOOP</h2>
+                    <p id="ralphStatus">Status: <span class="status-running">RUNNING</span> | Iteration: <span id="ralphIteration">0</span> | Task: <span id="ralphTask">None</span></p>
+                </div>
+                <div class="ralph-controls">
+                    <button class="btn btn-gold" onclick="controlRalph('start')">
+                        <i class="fas fa-play"></i> START
+                    </button>
+                    <button class="btn btn-red" onclick="controlRalph('stop')">
+                        <i class="fas fa-stop"></i> STOP
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metrics Grid -->
+        <div class="metrics-grid">
+            <div class="metric-card metric-tasks">
+                <div class="metric-header">
+                    <div class="metric-icon">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <div class="metric-trend">
+                        <i class="fas fa-bolt"></i>
+                        <span>Autonomous</span>
+                    </div>
+                </div>
+                <div class="metric-value" id="metricTasks">0</div>
+                <div class="metric-label">Tasks Completed</div>
+                <div class="metric-detail">Running: <span id="metricRunning">0</span></div>
+            </div>
+
+            <div class="metric-card metric-social">
+                <div class="metric-header">
+                    <div class="metric-icon">
+                        <i class="fas fa-share-alt"></i>
+                    </div>
+                    <div class="metric-trend">
+                        <i class="fas fa-globe"></i>
+                        <span>Multi-Platform</span>
+                    </div>
+                </div>
+                <div class="metric-value" id="metricSocial">0</div>
+                <div class="metric-label">Social Posts</div>
+                <div class="metric-detail">FB: <span id="metricFB">0</span> | IG: <span id="metricIG">0</span> | TW: <span id="metricTW">0</span></div>
+            </div>
+
+            <div class="metric-card metric-revenue">
+                <div class="metric-header">
+                    <div class="metric-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="metric-trend">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>Weekly</span>
+                    </div>
+                </div>
+                <div class="metric-value" id="metricRevenue">PKR 0</div>
+                <div class="metric-label">Revenue</div>
+                <div class="metric-detail">Profit: <span id="metricProfit">PKR 0</span></div>
+            </div>
+
+            <div class="metric-card metric-loop">
+                <div class="metric-header">
+                    <div class="metric-icon">
+                        <i class="fas fa-sync"></i>
+                    </div>
+                    <div class="metric-trend">
+                        <i class="fas fa-infinity"></i>
+                        <span>Max 15</span>
+                    </div>
+                </div>
+                <div class="metric-value" id="metricLoop">0</div>
+                <div class="metric-label">Loop Iterations</div>
+                <div class="metric-detail">Current Task: <span id="metricCurrentTask">None</span></div>
+            </div>
+
+            <div class="metric-card metric-errors">
+                <div class="metric-header">
+                    <div class="metric-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="metric-trend">
+                        <i class="fas fa-check"></i>
+                        <span>Recovery Active</span>
+                    </div>
+                </div>
+                <div class="metric-value" id="metricErrors">0</div>
+                <div class="metric-label">Errors Recovered</div>
+                <div class="metric-detail">Exponential Backoff</div>
+            </div>
+
+            <div class="metric-card metric-uptime">
+                <div class="metric-header">
+                    <div class="metric-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="metric-trend">
+                        <i class="fas fa-power-off"></i>
+                        <span>24/7</span>
+                    </div>
+                </div>
+                <div class="metric-value" id="metricUptime">Active</div>
+                <div class="metric-label">System Status</div>
+                <div class="metric-detail">All MCPs Running</div>
+            </div>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Domain Split -->
+            <div class="section domain-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-project-diagram"></i>
+                        CROSS-DOMAIN ROUTING
+                    </h2>
+                    <span class="section-badge">Personal + Business</span>
+                </div>
+                <div class="domain-grid">
+                    <div class="domain-card domain-personal">
+                        <div class="domain-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h3>PERSONAL DOMAIN</h3>
+                        <div class="domain-stats">
+                            <div class="domain-stat">
+                                <div class="stat-value" id="personalTasks">0</div>
+                                <div class="stat-label">Active Tasks</div>
+                            </div>
+                            <div class="domain-stat">
+                                <div class="stat-value status-active" id="personalStatus">IDLE</div>
+                                <div class="stat-label">Status</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="domain-card domain-business">
+                        <div class="domain-icon">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <h3>BUSINESS DOMAIN</h3>
+                        <div class="domain-stats">
+                            <div class="domain-stat">
+                                <div class="stat-value" id="businessTasks">0</div>
+                                <div class="stat-label">Active Tasks</div>
+                            </div>
+                            <div class="domain-stat">
+                                <div class="stat-value status-active" id="businessStatus">IDLE</div>
+                                <div class="stat-label">Status</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Social Media Status -->
+            <div class="section social-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-hashtag"></i>
+                        SOCIAL MEDIA MCP
+                    </h2>
+                    <span class="section-badge">Facebook + Instagram + Twitter</span>
+                </div>
+                <div class="social-grid">
+                    <div class="social-card" id="socialFacebook">
+                        <div class="social-icon facebook">
+                            <i class="fab fa-facebook"></i>
+                        </div>
+                        <h4>FACEBOOK</h4>
+                        <div class="social-status connected">
+                            <div class="status-dot"></div>
+                            <span>Connected</span>
+                        </div>
+                    </div>
+                    <div class="social-card" id="socialInstagram">
+                        <div class="social-icon instagram">
+                            <i class="fab fa-instagram"></i>
+                        </div>
+                        <h4>INSTAGRAM</h4>
+                        <div class="social-status connected">
+                            <div class="status-dot"></div>
+                            <span>Connected</span>
+                        </div>
+                    </div>
+                    <div class="social-card" id="socialTwitter">
+                        <div class="social-icon twitter">
+                            <i class="fab fa-twitter"></i>
+                        </div>
+                        <h4>TWITTER/X</h4>
+                        <div class="social-status connected">
+                            <div class="status-dot"></div>
+                            <span>Connected</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="social-actions">
+                    <button class="btn btn-gold" onclick="triggerPost('facebook')">
+                        <i class="fab fa-facebook"></i> Post Facebook
+                    </button>
+                    <button class="btn btn-gradient" onclick="triggerPost('instagram')">
+                        <i class="fab fa-instagram"></i> Post Instagram
+                    </button>
+                    <button class="btn btn-info" onclick="triggerPost('twitter')">
+                        <i class="fab fa-twitter"></i> Post Twitter
+                    </button>
+                </div>
+            </div>
+
+            <!-- Activity Feed -->
+            <div class="section activity-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-history"></i>
+                        AUDIT LOG
+                    </h2>
+                    <button class="btn btn-sm btn-outline" onclick="viewAllActivity()">
+                        View All <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+                <div class="activity-feed" id="activityFeed">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Loading audit log...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alerts & Controls -->
+            <div class="section controls-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        ALERTS & CONTROLS
+                    </h2>
+                </div>
+                
+                <div class="alerts-panel" id="alertsPanel">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Checking alerts...</p>
+                    </div>
+                </div>
+
+                <div class="control-panel">
+                    <h3><i class="fas fa-cogs"></i> QUICK ACTIONS</h3>
+                    <div class="control-grid">
+                        <button class="control-btn" onclick="triggerBriefing()">
+                            <i class="fas fa-file-alt"></i>
+                            <span>Generate CEO Briefing</span>
+                        </button>
+                        <button class="control-btn" onclick="refreshAllData()">
+                            <i class="fas fa-sync"></i>
+                            <span>Refresh All Data</span>
+                        </button>
+                        <button class="control-btn" onclick="viewLogs()">
+                            <i class="fas fa-list"></i>
+                            <span>View Audit Logs</span>
+                        </button>
+                        <button class="control-btn" onclick="openDocs()">
+                            <i class="fas fa-book"></i>
+                            <span>Documentation</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

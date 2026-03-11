@@ -1,0 +1,11 @@
+date,amount,description,category,domain,status
+2026-03-01,75000,Client B Invoice Paid,Revenue,Business,completed
+2026-03-02,-2999,Adobe Subscription,Expense,Business,pending
+2026-03-03,12000,Freelance Gig,Revenue,Personal,completed
+2026-03-04,-5000,Marketing Tools,Expense,Business,completed
+2026-03-05,0,Bank Fee,Expense,Business,pending
+2026-02-28,45000,Client A Invoice Paid,Revenue,Business,completed
+2026-02-27,-1500,AWS Cloud Services,Expense,Business,completed
+2026-02-26,-800,GitHub Enterprise,Expense,Business,completed
+2026-02-25,25000,Product Sale,Revenue,Business,completed
+2026-02-24,-3500,Office Supplies,Expense,Business,completed
